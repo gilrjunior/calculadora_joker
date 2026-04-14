@@ -472,7 +472,7 @@ function generate() {
 
   row('Início',     '<b>'+fmt(s)+'</b> <span class="out-sub">('+cap(fmtL(s))+')</span>');
   row('Execução',   dayLabel(lv.exec));
-  row('Prazo final','<b>'+fmt(f)+'</b> <span class="out-sub">('+cap(fmtL(f))+')</span>');
+  row('Prazo final','<b>'+fmt(f)+'</b> <span class="out-sub">('+cap(fmtL(f))+') — até o fim do dia</span>');
 
   var nd = document.createElement('div');
   nd.className = 'obs-out';
@@ -503,7 +503,7 @@ function copyOut() {
   var lines = [
     'Início: '+fmt(s)+' ('+cap(fmtL(s))+')',
     'Execução: '+dayLabel(lv.exec),
-    'Prazo final: '+fmt(f)+' ('+cap(fmtL(f))+')',
+    'Prazo final: '+fmt(f)+' ('+cap(fmtL(f))+') — até o fim do dia',
     '',
     'Observação: O prazo final indica uma data limite para evitar quebras de expectativa. Dependendo do andamento, a entrega pode ocorrer antes — e vamos nos esforçar para isso.',
   ];
