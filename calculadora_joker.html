@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Joker Calculadora</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0c0c0c;
+    --surface: #161616;
+    --surface2: #1f1f1f;
+    --border: #2a2a2a;
+    --border2: #383838;
+    --text: #f0ede8;
+    --text2: #888480;
+    --text3: #4a4744;
+    --green: #4ade80;
+    --green-bg: rgba(74,222,128,0.08);
+    --green-border: rgba(74,222,128,0.25);
+    --amber: #fbbf24;
+    --amber-bg: rgba(251,191,36,0.08);
+    --amber-border: rgba(251,191,36,0.25);
+    --red: #f87171;
+    --red-bg: rgba(248,113,113,0.08);
+    --red-border: rgba(248,113,113,0.25);
+    --radius: 8px;
+    --radius-lg: 14px;
+    --radius-xl: 18px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    min-height: 100vh;
+    padding: 48px 24px 72px;
+  }
+
+  .container { max-width: 620px; margin: 0 auto; }
+
+  /* Header */
+  .header { text-align: center; margin-bottom: 40px; }
+
+  .joker-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 58px; height: 58px;
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 15px;
+    margin-bottom: 16px;
+  }
+
+  .header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 26px;
+    font-weight: 400;
+    color: var(--text);
+    letter-spacing: -0.02em;
+    margin-bottom: 5px;
+  }
+
+  .header p { font-size: 13px; color: var(--text2); }
+
+  /* Card */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: 26px;
+    margin-bottom: 12px;
+  }
+
+  .card-label {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 18px;
+  }
+
+  /* Fields */
+  .field { margin-bottom: 14px; }
+  .field:last-child { margin-bottom: 0; }
+
+  .field > label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text2);
+    margin-bottom: 6px;
+  }
+
+  select, input[type="date"], textarea {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    padding: 10px 14px;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  select {
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%234a4744' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 13px center;
+    padding-right: 34px;
+    cursor: pointer;
+  }
+
+  select:focus, input[type="date"]:focus, textarea:focus {
+    border-color: var(--border2);
+    box-shadow: 0 0 0 3px rgba(255,255,255,0.04);
+  }
+
+  input[type="date"] { color-scheme: dark; }
+  textarea { resize: vertical; min-height: 76px; line-height: 1.6; }
+
+  .hr { height: 1px; background: var(--border); margin: 20px 0; }
+
+  /* Complexity grid */
+  .complexity-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .c-btn {
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    border-radius: var(--radius);
+    padding: 14px 8px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.14s;
+    user-select: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .c-btn:hover { border-color: var(--border2); }
+
+  .c-btn.sel-s { border-color: var(--green-border); background: var(--green-bg); }
+  .c-btn.sel-m { border-color: var(--amber-border); background: var(--amber-bg); }
+  .c-btn.sel-c { border-color: var(--red-border);   background: var(--red-bg); }
+
+  .c-pip  { width: 6px; height: 6px; border-radius: 50%; background: var(--border2); transition: background 0.14s; }
+  .c-name { font-size: 13px; font-weight: 500; color: var(--text2); transition: color 0.14s; }
+  .c-days { font-size: 11px; color: var(--text3); transition: color 0.14s; }
+
+  .c-btn.sel-s .c-pip  { background: var(--green); }
+  .c-btn.sel-s .c-name { color: var(--green); }
+  .c-btn.sel-s .c-days { color: var(--green); opacity: 0.6; }
+
+  .c-btn.sel-m .c-pip  { background: var(--amber); }
+  .c-btn.sel-m .c-name { color: var(--amber); }
+  .c-btn.sel-m .c-days { color: var(--amber); opacity: 0.6; }
+
+  .c-btn.sel-c .c-pip  { background: var(--red); }
+  .c-btn.sel-c .c-name { color: var(--red); }
+  .c-btn.sel-c .c-days { color: var(--red); opacity: 0.6; }
+
+  /* Preview */
+  .preview {
+    margin-top: 14px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    display: none;
+  }
+
+  .preview.show { display: block; }
+
+  .prev-row {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    padding: 9px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .prev-row:last-child { border-bottom: none; }
+  .prev-key { font-size: 12px; color: var(--text3); min-width: 72px; flex-shrink: 0; }
+  .prev-val { font-size: 14px; font-weight: 500; color: var(--text); }
+  .prev-val.big { font-family: 'DM Serif Display', serif; font-size: 16px; }
+
+  /* Button */
+  .gen-btn {
+    width: 100%;
+    padding: 13px;
+    background: var(--text);
+    color: #0c0c0c;
+    border: none;
+    border-radius: var(--radius-lg);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: opacity 0.15s, transform 0.1s;
+    margin-bottom: 12px;
+  }
+
+  .gen-btn:hover  { opacity: 0.82; }
+  .gen-btn:active { transform: scale(0.99); }
+
+  /* Output */
+  .output-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    display: none;
+    animation: fadeUp 0.22s ease;
+  }
+
+  .output-card.show { display: block; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .out-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .out-header-label {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .copy-btn {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    color: var(--text2);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 5px 13px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .copy-btn:hover  { border-color: var(--text); color: var(--text); }
+  .copy-btn.copied { border-color: var(--green-border); color: var(--green); background: var(--green-bg); }
+
+  .out-body { padding: 22px 20px; }
+
+  .out-row {
+    display: flex;
+    gap: 16px;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--border);
+    align-items: baseline;
+  }
+
+  .out-row:last-child { border-bottom: none; }
+
+  .out-key { font-size: 12px; color: var(--text3); min-width: 88px; flex-shrink: 0; }
+  .out-val { font-size: 14px; color: var(--text); line-height: 1.5; }
+  .out-val b { font-weight: 500; font-family: 'DM Serif Display', serif; font-size: 16px; letter-spacing: -0.01em; }
+  .out-sub { font-size: 12px; color: var(--text3); }
+
+  .obs-out {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--text2);
+    line-height: 1.6;
+  }
+
+  .obs-out-label {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 6px;
+  }
+
+  @media (max-width: 480px) {
+    .complexity-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="joker-mark">
+      <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="8"  cy="8"  r="4" fill="#f0ede8" opacity="0.9"/>
+        <circle cx="22" cy="8"  r="4" fill="#f0ede8" opacity="0.9"/>
+        <circle cx="15" cy="22" r="4" fill="#f0ede8" opacity="0.9"/>
+        <path d="M8 12 Q10 16 15 18 Q20 16 22 12" fill="#f0ede8" opacity="0.15" stroke="#f0ede8" stroke-width="0.8" stroke-opacity="0.4"/>
+        <path d="M11.5 5.5 L12.2 7.5 L14.2 7.5 L12.7 8.7 L13.3 10.7 L11.5 9.5 L9.7 10.7 L10.3 8.7 L8.8 7.5 L10.8 7.5 Z" fill="#f0ede8" opacity="0.5"/>
+      </svg>
+    </div>
+    <h1>Joker Calculadora</h1>
+    <p>Calculadora de prazos para triagem de cards</p>
+  </div>
+
+  <div class="card">
+    <p class="card-label">Configurar card</p>
+
+    <div class="field">
+      <label>Tipo de atividade</label>
+      <select id="tipo" onchange="onTypeChange()">
+        <option value="cfg">Configuração de RN / Configuração inicial / Setup</option>
+        <option value="bug">Investigação e correção de bugs</option>
+        <option value="rel">Desenvolvimento de relatórios</option>
+        <option value="disc">Discovery e mapeamento de solução</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Data de início</label>
+      <input type="date" id="start-date" onchange="onDateChange()">
+    </div>
+
+    <div class="hr"></div>
+
+    <div class="field" style="margin-bottom:0">
+      <label>Complexidade da demanda</label>
+      <div class="complexity-grid" id="c-grid"></div>
+      <div class="preview" id="preview">
+        <div class="prev-row">
+          <span class="prev-key">Início</span>
+          <span class="prev-val" id="pv-start"></span>
+        </div>
+        <div class="prev-row">
+          <span class="prev-key">Execução</span>
+          <span class="prev-val" id="pv-exec"></span>
+        </div>
+        <div class="prev-row">
+          <span class="prev-key">Prazo final</span>
+          <span class="prev-val big" id="pv-final"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="card-label">Informações adicionais <span style="font-weight:300;text-transform:none;letter-spacing:0;color:var(--text3);font-size:11px">(opcional)</span></p>
+    <textarea id="obs" placeholder="Dependências, bloqueios, contexto relevante..."></textarea>
+  </div>
+
+  <button class="gen-btn" onclick="generate()">
+    <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+      <path d="M2.5 7.5h10M8.5 3.5l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    Gerar mensagem para o card
+  </button>
+
+  <div class="output-card" id="out-card">
+    <div class="out-header">
+      <span class="out-header-label">Mensagem do card</span>
+      <button class="copy-btn" id="copy-btn" onclick="copyOut()">Copiar</button>
+    </div>
+    <div class="out-body" id="out-body"></div>
+  </div>
+
+</div>
+<script>
+var ACT = {
+  cfg:  { label: 'Configuração de RN / Configuração inicial / Setup',
+          levels: { s:{label:'Simples',exec:1}, m:{label:'Média',exec:3}, c:{label:'Complexa',exec:5} } },
+  bug:  { label: 'Investigação e correção de bugs',
+          levels: { s:{label:'Simples',exec:2}, m:{label:'Média',exec:4}, c:{label:'Complexo',exec:7} } },
+  rel:  { label: 'Desenvolvimento de relatórios',
+          levels: { s:{label:'Simples',exec:3}, m:{label:'Média',exec:5}, c:{label:'Complexo',exec:7} } },
+  disc: { label: 'Discovery e mapeamento de solução',
+          levels: { s:{label:'Simples',exec:5}, m:{label:'Média',exec:8}, c:{label:'Complexo',exec:10} } }
+};
+
+var sel = null;
+
+function bizAdd(date, n) {
+  var d = new Date(date);
+  if (!n) return d;
+  var a = 0;
+  while (a < n) { d.setDate(d.getDate()+1); if(d.getDay()!==0&&d.getDay()!==6) a++; }
+  return d;
+}
+
+function fmt(d)  { return d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'}); }
+function fmtL(d) { return d.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'}); }
+function cap(s)  { return s.charAt(0).toUpperCase()+s.slice(1); }
+function dayLabel(n) { return '+'+n+' dia'+(n>1?'s úteis':' útil'); }
+function getAct() { return ACT[document.getElementById('tipo').value]; }
+function getRaw() { return document.getElementById('start-date').value; }
+function hideOut() { document.getElementById('out-card').classList.remove('show'); }
+
+function renderGrid() {
+  var act = getAct();
+  var g = document.getElementById('c-grid');
+  g.innerHTML = '';
+  ['s','m','c'].forEach(function(k) {
+    var lv = act.levels[k];
+    var b = document.createElement('div');
+    b.className = 'c-btn'+(sel===k?' sel-'+k:'');
+    b.onclick = function(){ sel=k; renderGrid(); renderPreview(); hideOut(); };
+    b.innerHTML = '<div class="c-pip"></div><span class="c-name">'+lv.label+'</span><span class="c-days">'+dayLabel(lv.exec)+'</span>';
+    g.appendChild(b);
+  });
+  renderPreview();
+}
+
+function renderPreview() {
+  var raw = getRaw();
+  var p = document.getElementById('preview');
+  if (!raw || !sel) { p.classList.remove('show'); return; }
+  var lv = getAct().levels[sel];
+  var s = new Date(raw+'T12:00:00');
+  var f = bizAdd(s, lv.exec);
+  document.getElementById('pv-start').textContent = fmt(s);
+  document.getElementById('pv-exec').textContent  = dayLabel(lv.exec);
+  document.getElementById('pv-final').textContent = fmt(f);
+  p.classList.add('show');
+}
+
+function onTypeChange() { sel=null; renderGrid(); hideOut(); }
+function onDateChange()  { renderPreview(); hideOut(); }
+
+function generate() {
+  var raw = getRaw();
+  if (!raw) { alert('Informe a data de início.'); return; }
+  if (!sel)  { alert('Selecione a complexidade.'); return; }
+  var act = getAct();
+  var lv  = act.levels[sel];
+  var s   = new Date(raw+'T12:00:00');
+  var f   = bizAdd(s, lv.exec);
+  var obs = document.getElementById('obs').value.trim();
+  var body = document.getElementById('out-body');
+  body.innerHTML = '';
+
+  function row(key, valHtml) {
+    var d = document.createElement('div');
+    d.className = 'out-row';
+    d.innerHTML = '<span class="out-key">'+key+'</span><span class="out-val">'+valHtml+'</span>';
+    body.appendChild(d);
+  }
+
+  row('Início',     '<b>'+fmt(s)+'</b> <span class="out-sub">('+cap(fmtL(s))+')</span>');
+  row('Execução',   dayLabel(lv.exec));
+  row('Prazo final','<b>'+fmt(f)+'</b> <span class="out-sub">('+cap(fmtL(f))+')</span>');
+
+  var nd = document.createElement('div');
+  nd.className = 'obs-out';
+  nd.style.borderTopColor = 'var(--border)';
+  nd.innerHTML = '<div class="obs-out-label">Observação</div><div>O prazo final indica uma data limite para evitar quebras de expectativa. Dependendo do andamento, a entrega pode ocorrer antes — e vamos nos esforçar para isso.</div>';
+  body.appendChild(nd);
+
+  if (obs) {
+    var od = document.createElement('div');
+    od.className = 'obs-out';
+    od.innerHTML = '<div class="obs-out-label">Informações adicionais</div><div>'+obs.replace(/\n/g,'<br>')+'</div>';
+    body.appendChild(od);
+  }
+
+  var oc = document.getElementById('out-card');
+  oc.classList.add('show');
+  document.getElementById('copy-btn').textContent = 'Copiar';
+  document.getElementById('copy-btn').classList.remove('copied');
+  setTimeout(function(){ oc.scrollIntoView({behavior:'smooth',block:'start'}); }, 40);
+}
+
+function copyOut() {
+  var raw = getRaw();
+  var lv  = getAct().levels[sel];
+  var s   = new Date(raw+'T12:00:00');
+  var f   = bizAdd(s, lv.exec);
+  var obs = document.getElementById('obs').value.trim();
+  var lines = [
+    'Início: '+fmt(s)+' ('+cap(fmtL(s))+')',
+    'Execução: '+dayLabel(lv.exec),
+    'Prazo final: '+fmt(f)+' ('+cap(fmtL(f))+')',
+    '',
+    'Observação: O prazo final indica uma data limite para evitar quebras de expectativa. Dependendo do andamento, a entrega pode ocorrer antes — e vamos nos esforçar para isso.',
+  ];
+  if (obs) { lines.push(''); lines.push('Informações adicionais:'); lines.push(obs); }
+  navigator.clipboard.writeText(lines.join('\n')).then(function() {
+    var b = document.getElementById('copy-btn');
+    b.textContent = '✓ Copiado';
+    b.classList.add('copied');
+    setTimeout(function(){ b.textContent='Copiar'; b.classList.remove('copied'); }, 2200);
+  });
+}
+
+var t = new Date();
+document.getElementById('start-date').value =
+  t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0');
+renderGrid();
+</script>
+</body>
+</html>
